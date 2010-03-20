@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crabwise.CommandWrap.Library", "Crabwise.CommandWrap.Library\Crabwise.CommandWrap.Library.csproj", "{70EC988D-141A-4258-84BB-401983EB8556}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crabwise.CommandWrap.UnitTests", "Crabwise.CommandWrap.UnitTests\Crabwise.CommandWrap.UnitTests.csproj", "{15122040-D01B-400F-9B36-0A92A2BE4F2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D6886348-42B1-45C8-8F18-7FDF445BD542}"
+	ProjectSection(SolutionItems) = preProject
+		Crabwise.CommandWrap.vsmdi = Crabwise.CommandWrap.vsmdi
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Crabwise.CommandWrap.vsmdi
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{70EC988D-141A-4258-84BB-401983EB8556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70EC988D-141A-4258-84BB-401983EB8556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70EC988D-141A-4258-84BB-401983EB8556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70EC988D-141A-4258-84BB-401983EB8556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15122040-D01B-400F-9B36-0A92A2BE4F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15122040-D01B-400F-9B36-0A92A2BE4F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15122040-D01B-400F-9B36-0A92A2BE4F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15122040-D01B-400F-9B36-0A92A2BE4F2F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
