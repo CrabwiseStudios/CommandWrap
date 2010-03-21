@@ -30,7 +30,7 @@
         /// <returns>An <see cref="Int32"/> containing the hash value generated for this command.</returns>
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            return this.ToString().GetHashCode();
         }
 
         /// <summary>
@@ -40,7 +40,10 @@
         /// <see cref="Command"/>.</returns>
         public override string ToString()
         {
-            return base.ToString();
+            SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
+            syntaxBuilder.AppendCommand(this);
+
+            return syntaxBuilder.ToString();
         }
     }
 }

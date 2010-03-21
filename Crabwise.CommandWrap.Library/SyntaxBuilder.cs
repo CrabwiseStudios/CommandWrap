@@ -9,7 +9,7 @@
     {
         private readonly StringBuilder syntax = new StringBuilder(32, 32767);
 
-        public void BuildCommand(Command command)
+        public void AppendCommand(Command command)
         {
             var commandType = command.GetType();
             var syntaxAttribute = this.GetSyntaxAttribute(commandType);

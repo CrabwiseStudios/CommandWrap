@@ -21,7 +21,7 @@
                 };
 
             string expected = "command --param1 \"" + argument.ToString() + '"';
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -41,7 +41,7 @@
 
             string expected = "command --param1 \"" + argument1.ToString() + "\" --param2 \"" +
                 argument2.ToString() + '"';
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -58,7 +58,7 @@
             };
 
             string expected = "command --param1 \"" + argument1.ToString() + '"';
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -71,7 +71,7 @@
             CommandWithTwoParams command = new CommandWithTwoParams();
 
             string expected = "command";
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -88,7 +88,7 @@
             };
 
             string expected = "command --param1 \"" + argument1.ToString() + '"';
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -103,7 +103,7 @@
             CommandWithRequiredParam command = new CommandWithRequiredParam();
 
             string expected = "command --param1 " + argument1.ToString();
-            target.BuildCommand(command);
+            target.AppendCommand(command);
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
