@@ -45,7 +45,13 @@
   -->
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="CommandSyntaxAttribute.cs" />
+    <Compile Include="Parameter.cs" />
+    <Compile Include="ParameterSyntaxAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SyntaxAttribute.cs" />
+    <Compile Include="SyntaxBuilder.cs" />
+    <Compile Include="SyntaxException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

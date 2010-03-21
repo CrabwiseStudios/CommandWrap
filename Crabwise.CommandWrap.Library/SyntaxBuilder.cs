@@ -12,6 +12,13 @@
         public void BuildCommand(Command command)
         {
             var commandType = command.GetType();
+            var syntaxAttribute = this.GetSyntaxAttribute(commandType);
+            if (syntaxAttribute == null || !(syntaxAttribute is CommandSyntaxAttribute))
+            {
+                const string MESSAGE = "The provided command doesn't have a CommandSyntaxAttribute.";
+                throw new SyntaxException(MESSAGE, null);
+            }
+
             this.BuildCommandFromType(commandType, command);
         }
 
@@ -22,16 +29,16 @@
 
         private void BuildCommandFromType(Type commandType, Command command)
         {
-            var baseType = commandType.BaseType;
-            if (baseType != null)
-            {
-                this.BuildCommandFromType(baseType, command);
-            }
-
             var syntaxAttribute = this.GetSyntaxAttribute(commandType);
-            if (syntaxAttribute == null)
+            if (syntaxAttribute == null || !(syntaxAttribute is CommandSyntaxAttribute))
             {
                 return;
+            }
+
+            var baseType = commandType.BaseType;
+            if (baseType != null && baseType.IsSubclassOf(typeof(Command)))
+            {
+                this.BuildCommandFromType(baseType, command);
             }
 
             this.syntax.Append(syntaxAttribute.Syntax + ' ');
@@ -50,18 +57,34 @@
                 var returnType = property.GetGetMethod().ReturnType;
                 if (returnType.IsSubclassOf(typeof(ValueType)) && Nullable.GetUnderlyingType(returnType) == null)
                 {
-                    // Type isn't nullable.
-                    throw new System.Exception();
+                    const string MESSAGE = "The return type for a parameter isn't nullable. All properties adorned " +
+                        "with a ParameterSyntaxAttribute must be nullable. For primitives, consider suffixing the " +
+                        "type declaration with a question mark (?).";
+                    throw new SyntaxException(MESSAGE, null, parameterSyntaxAttribute);
                 }
 
                 var argument = property.GetValue(command, null);
                 if (argument == null && parameterSyntaxAttribute.Required)
                 {
-                    // Argument required and wasn't provided.
-                    throw new System.Exception();
+                    const string MESSAGE = "A parameter was marked as required but an argument was never given.";
+                    throw new SyntaxException(MESSAGE, null, parameterSyntaxAttribute);
                 }
 
-                parameters.Add(new Parameter(parameterSyntaxAttribute, argument));
+                var parameterType = parameterSyntaxAttribute.ParameterType;
+                try
+                {
+                    var parameterInstance = (Parameter)Activator.CreateInstance(
+                        parameterType,
+                        parameterSyntaxAttribute,
+                        argument);
+                    parameters.Add(parameterInstance);
+                }
+                catch (Exception e)
+                {
+                    const string MESSAGE = "Could not create an instance of the parameter type. If you're using a " +
+                        "custom parameter type, make sure it doesn't implement any new constructors.";
+                    throw new SyntaxException(MESSAGE, e, parameterSyntaxAttribute);
+                }
             }
 
             parameters.Sort();
@@ -73,7 +96,7 @@
                     continue;
                 }
 
-                this.syntax.Append(parameter.ToString() + ' ');
+                this.syntax.Append(parameterString + ' ');
             }
         }
 

@@ -15,6 +15,7 @@
         public ParameterSyntaxAttribute(string syntax)
             : base(syntax)
         {
+            this.ParameterType = typeof(Parameter);
         }
 
         /// <summary>
@@ -28,6 +29,8 @@
         /// </summary>
         public bool Required { get; set; }
 
+        public Type ParameterType { get; set; }
+
         /// <summary>
         /// Compares this <see cref="ParameterSyntaxAttribute"/> with another 
         /// <see cref="ParameterSyntaxAttribute"/>.
@@ -38,7 +41,7 @@
         /// greater than <paramref name="other"/>.</returns>
         public int CompareTo(ParameterSyntaxAttribute other)
         {
-            return this.Priority.CompareTo(other.Priority);
+            return other.Priority.CompareTo(this.Priority);
         }
     }
 }
