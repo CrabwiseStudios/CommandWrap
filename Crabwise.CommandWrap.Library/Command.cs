@@ -4,6 +4,7 @@
     using System.Collections;
     using System.Diagnostics;
     using System.Text;
+    using System.IO;
 
     /// <summary>
     /// Provides an abstract representation of a command prompt command.
@@ -34,8 +35,27 @@
             var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
             SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
             var arguments = syntaxBuilder.Arguments;
-            var fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
-            var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
+            string fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
+            string workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
+            if (!string.IsNullOrEmpty(workingDirectory))
+            {
+                workingDirectory = Environment.ExpandEnvironmentVariables(workingDirectory);
+            }
+
+            if (startInfo != null)
+            {
+                if (!string.IsNullOrEmpty(startInfo.Path))
+                {
+                    var path = Path.Combine(startInfo.Path, commandSyntaxAttribute.Syntax);
+                    fileName = Environment.ExpandEnvironmentVariables(path);
+                }
+
+                if (!string.IsNullOrEmpty(startInfo.WorkingDirectory))
+                {
+                    workingDirectory = Environment.ExpandEnvironmentVariables(startInfo.WorkingDirectory);
+                }
+            }
+
             var processStartInfo = new ProcessStartInfo();
             if (startInfo != null)
             {

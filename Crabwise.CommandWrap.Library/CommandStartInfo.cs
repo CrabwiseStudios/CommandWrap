@@ -13,9 +13,13 @@
 
         public SecureString Password { get; set; }
 
+        public string Path { get; set; }
+
         public string UserName { get; set; }
 
         public ProcessWindowStyle WindowStyle { get; set; }
+
+        public string WorkingDirectory { get; set; }
 
         public CommandStartInfo(ProcessStartInfo processStartInfo)
         {
