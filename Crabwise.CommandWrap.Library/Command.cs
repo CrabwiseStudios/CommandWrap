@@ -20,6 +20,11 @@
 
         public int Execute()
         {
+            return this.Execute(null);
+        }
+
+        public int Execute(CommandStartInfo startInfo)
+        {
             if (this.HasExecuted)
             {
                 // Need command exception.
@@ -31,16 +36,18 @@
             var arguments = syntaxBuilder.Arguments;
             var fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
             var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
-            var processStartInfo = new ProcessStartInfo
-                {
-                    Arguments = arguments,
-                    FileName = fileName,
-                    RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    WorkingDirectory = workingDirectory
-                };
+            var processStartInfo = new ProcessStartInfo();
+            if (startInfo != null)
+            {
+                processStartInfo = startInfo.GetProcessStartInfo();
+            }
+            processStartInfo.Arguments = arguments;
+            processStartInfo.FileName = fileName;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.RedirectStandardInput = true;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.UseShellExecute = false;
+            processStartInfo.WorkingDirectory = workingDirectory;
 
             process = new Process { StartInfo = processStartInfo };
             var errorOutputBuilder = new StringBuilder();
