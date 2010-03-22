@@ -83,7 +83,8 @@
                         continue;
                     }
 
-                    argumentBuilder.AppendFormat("\"{0}\" ", itemString);
+                    itemString = this.EscapeSpaces(itemString);
+                    argumentBuilder.AppendFormat(itemString);
                 }
 
                 var argumentString = argumentBuilder.ToString().Trim();
@@ -95,12 +96,21 @@
             if (argumentAsEnum != null)
             {
                 var enumName = Enum.GetName(this.argument.GetType(), this.argument);
-                var argumentString = string.Format("\"{0}\"", enumName);
-                return this.syntax.Replace("{arg}", argumentString).Trim();
+                return this.syntax.Replace("{arg}", enumName).Trim();
             }
 
-            string defaultArgumentString = string.Format("\"{0}\"", this.argument.ToString());
+            string defaultArgumentString = this.EscapeSpaces(this.argument.ToString());
             return this.syntax.Replace("{arg}", defaultArgumentString).Trim();
+        }
+
+        private string EscapeSpaces(string argument)
+        {
+            if (argument.Contains(" "))
+            {
+                argument = string.Format("\"{0}\"", argument);
+            }
+
+            return argument;
         }
     }
 }

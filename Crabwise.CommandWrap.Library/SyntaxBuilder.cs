@@ -10,6 +10,8 @@
     {
         private readonly StringBuilder syntax = new StringBuilder(32, 32767);
 
+        public string FileName { get; private set; }
+
         public void AppendCommand(Command command)
         {
             var commandType = command.GetType();
@@ -57,9 +59,18 @@
                 this.BuildCommandFromType(baseType, command);
             }
 
-            if (commandType.BaseType != typeof(Command))
+            var fileName = commandSyntaxAttribute.GetFileName();
+            if (fileName.Contains(" "))
             {
-                this.syntax.AppendFormat("\"{0}\" ", commandSyntaxAttribute.GetFileName());
+                fileName = string.Format("\"{0}\"", fileName);
+            }
+            if (commandType.BaseType == typeof(Command))
+            {
+                this.FileName = fileName;
+            }
+            else
+            {
+                this.syntax.AppendFormat(fileName + ' ');
             }
 
             var properties = commandType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance |

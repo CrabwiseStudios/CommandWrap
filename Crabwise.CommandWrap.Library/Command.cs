@@ -15,7 +15,7 @@
             SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
             syntaxBuilder.AppendCommand(this);
             var arguments = syntaxBuilder.ToString();
-            var fileName = commandSyntaxAttribute.GetFileName();
+            var fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
             var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
             var processStartInfo = new ProcessStartInfo
                 {
@@ -66,9 +66,8 @@
         {
             SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
             syntaxBuilder.AppendCommand(this);
-            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
 
-            return commandSyntaxAttribute.GetFileName() + ' ' + syntaxBuilder.ToString();
+            return syntaxBuilder.FileName + ' ' + syntaxBuilder.ToString();
         }
 
         private CommandSyntaxAttribute GetCommandSyntaxAttribute()
