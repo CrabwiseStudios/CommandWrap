@@ -45,6 +45,7 @@
   -->
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="CommandStartInfo.cs" />
     <Compile Include="CommandSyntaxAttribute.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="ParameterSyntaxAttribute.cs" />

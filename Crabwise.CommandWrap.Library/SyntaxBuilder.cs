@@ -8,35 +8,22 @@
 
     internal sealed class SyntaxBuilder
     {
-        private readonly StringBuilder syntax = new StringBuilder(32, 32767);
+        private readonly Command command;
+        private StringBuilder arguments;
+
+        public string Arguments { get; private set; }
 
         public string FileName { get; private set; }
 
-        public void AppendCommand(Command command)
+        public SyntaxBuilder(Command command)
         {
-            var commandType = command.GetType();
-            var syntaxAttribute = this.GetSyntaxAttribute(commandType);
-            if (syntaxAttribute == null || !(syntaxAttribute is CommandSyntaxAttribute))
-            {
-                const string MESSAGE = "The provided command doesn't have a CommandSyntaxAttribute.";
-                throw new SyntaxException(MESSAGE, null);
-            }
-
-            try
-            {
-                this.BuildCommandFromType(commandType, command);
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                const string MESSAGE = "The length of this command is too long. Process start strings are limited to " +
-                    "32767 characters.";
-                throw new SyntaxException(MESSAGE, e);
-            }
+            this.command = command;
+            this.BuildSyntax();
         }
 
         public override string ToString()
         {
-            return this.syntax.ToString().Trim();
+            return this.FileName + " " + this.Arguments;
         }
 
         private void BuildCommandFromType(Type commandType, Command command)
@@ -70,7 +57,7 @@
             }
             else
             {
-                this.syntax.AppendFormat(fileName + ' ');
+                this.arguments.AppendFormat(fileName + ' ');
             }
 
             var properties = commandType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance |
@@ -126,8 +113,33 @@
                     continue;
                 }
 
-                this.syntax.Append(parameterString + ' ');
+                this.arguments.Append(parameterString + ' ');
             }
+        }
+
+        private void BuildSyntax()
+        {
+            arguments = new StringBuilder(32, 32767);
+            var commandType = command.GetType();
+            var syntaxAttribute = this.GetSyntaxAttribute(commandType);
+            if (syntaxAttribute == null || !(syntaxAttribute is CommandSyntaxAttribute))
+            {
+                const string MESSAGE = "The provided command doesn't have a CommandSyntaxAttribute.";
+                throw new SyntaxException(MESSAGE, null);
+            }
+
+            try
+            {
+                this.BuildCommandFromType(commandType, command);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                const string MESSAGE = "The length of this command is too long. Process start strings are limited to " +
+                    "32767 characters.";
+                throw new SyntaxException(MESSAGE, e);
+            }
+
+            this.Arguments = this.arguments.ToString().Trim();
         }
 
         private SyntaxAttribute GetSyntaxAttribute(MemberInfo memberInfo)

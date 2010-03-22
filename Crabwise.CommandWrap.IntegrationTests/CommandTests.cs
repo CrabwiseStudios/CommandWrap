@@ -11,14 +11,20 @@
     public class CommandTests
     {
         [TestMethod()]
-        public void ToString_StringArgument_UsesDefaultStringBehavior()
+        public void Execute_DirCommand_ExecutesSuccessfully()
         {
             var dirCommand = new DirCommand();
-            dirCommand.CommandExecution = CommandPromptCommand.CommandOptions.K;
+            dirCommand.CommandExecution = CommandPromptCommand.CommandOptions.C;
             dirCommand.Paths.Add(".");
             dirCommand.Execute();
+        }
 
-            //Assert.AreEqual(expected, actual);
+        [TestMethod()]
+        public void Execute_IpConfigCommand_ExecutesSuccessfully()
+        {
+            var ipConfigCommand = new IpConfigCommand();
+            ipConfigCommand.CommandExecution = CommandPromptCommand.CommandOptions.C;
+            ipConfigCommand.Execute();
         }
     }
 }

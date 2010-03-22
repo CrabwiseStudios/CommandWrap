@@ -1,20 +1,34 @@
 ﻿namespace Crabwise.CommandWrap.Library
 {
     using System;
+    using System.Collections;
     using System.Diagnostics;
-    using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Provides an abstract representation of a command prompt command.
     /// </summary>
     public abstract class Command
     {
-        public void Execute()
+        private Process process;
+
+        public string ErrorOutput { get; private set; }
+
+        public bool HasExecuted { get; private set; }
+
+        public string StandardOutput { get; private set; }
+
+        public int Execute()
         {
+            if (this.HasExecuted)
+            {
+                // Need command exception.
+                throw new Exception();
+            }
+
             var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
-            SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
-            syntaxBuilder.AppendCommand(this);
-            var arguments = syntaxBuilder.ToString();
+            SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
+            var arguments = syntaxBuilder.Arguments;
             var fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
             var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
             var processStartInfo = new ProcessStartInfo
@@ -28,7 +42,51 @@
                     WorkingDirectory = workingDirectory
                 };
 
-            var process = Process.Start(processStartInfo);
+            process = new Process { StartInfo = processStartInfo };
+            var errorOutputBuilder = new StringBuilder();
+            var standardOutputBuilder = new StringBuilder();
+            process.ErrorDataReceived += (s, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        errorOutputBuilder.AppendLine(e.Data);
+                    }
+                };
+            process.OutputDataReceived += (s, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data))
+                    {
+                        standardOutputBuilder.AppendLine(e.Data);
+                    }
+                };
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
+            process.WaitForExit();
+
+            this.ErrorOutput = errorOutputBuilder.ToString();
+            this.StandardOutput = standardOutputBuilder.ToString();
+            this.HasExecuted = true;
+            return process.ExitCode;
+        }
+
+        public void WriteToStandardIn(object input)
+        {
+            process.StandardInput.Write(input);
+        }
+
+        public void WriteToStandardIn(ICollection input)
+        {
+            foreach (var item in input)
+            {
+                process.StandardInput.WriteLine(item);
+            }
+        }
+
+        public void WriteLineToStandardIn(object input)
+        {
+            process.StandardInput.WriteLine(input);
         }
 
         /// <summary>
@@ -64,10 +122,9 @@
         /// <see cref="Command"/>.</returns>
         public override string ToString()
         {
-            SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
-            syntaxBuilder.AppendCommand(this);
+            SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
 
-            return syntaxBuilder.FileName + ' ' + syntaxBuilder.ToString();
+            return syntaxBuilder.ToString();
         }
 
         private CommandSyntaxAttribute GetCommandSyntaxAttribute()

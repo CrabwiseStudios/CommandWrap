@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Commands\CommandPromptCommand.cs" />
     <Compile Include="Commands\DirCommand.cs" />
+    <Compile Include="Commands\IpConfigCommand.cs" />
     <Compile Include="CommandTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
