@@ -20,7 +20,7 @@
                     Parameter1 = argument
                 };
 
-            string expected = "command --param1 \"" + argument.ToString() + '"';
+            string expected = "--param1 \"" + argument.ToString() + '"';
             target.AppendCommand(command);
             string actual = target.ToString();
 
@@ -39,7 +39,7 @@
                 Parameter2 = argument2
             };
 
-            string expected = "command --param1 \"" + argument1.ToString() + "\" --param2 \"" +
+            string expected = "--param1 \"" + argument1.ToString() + "\" --param2 \"" +
                 argument2.ToString() + '"';
             target.AppendCommand(command);
             string actual = target.ToString();
@@ -57,7 +57,7 @@
                 Parameter1 = argument1
             };
 
-            string expected = "command --param1 \"" + argument1.ToString() + '"';
+            string expected = "--param1 \"" + argument1.ToString() + '"';
             target.AppendCommand(command);
             string actual = target.ToString();
 
@@ -70,7 +70,7 @@
             SyntaxBuilder target = new SyntaxBuilder();
             CommandWithTwoParams command = new CommandWithTwoParams();
 
-            string expected = "command";
+            string expected = "";
             target.AppendCommand(command);
             string actual = target.ToString();
 
@@ -87,7 +87,7 @@
                 Parameter1 = argument1,
             };
 
-            string expected = "command --param1 \"" + argument1.ToString() + '"';
+            string expected = "--param1 \"" + argument1.ToString() + '"';
             target.AppendCommand(command);
             string actual = target.ToString();
 
@@ -102,7 +102,7 @@
             const int argument1 = 0;
             CommandWithRequiredParam command = new CommandWithRequiredParam();
 
-            string expected = "command --param1 " + argument1.ToString();
+            string expected = "--param1 " + argument1.ToString();
             target.AppendCommand(command);
             string actual = target.ToString();
 

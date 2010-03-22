@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Reflection;
     using System.Text;
+    using System.IO;
 
     internal sealed class SyntaxBuilder
     {
@@ -19,7 +20,16 @@
                 throw new SyntaxException(MESSAGE, null);
             }
 
-            this.BuildCommandFromType(commandType, command);
+            try
+            {
+                this.BuildCommandFromType(commandType, command);
+            }
+            catch (ArgumentOutOfRangeException e)
+            {
+                const string MESSAGE = "The length of this command is too long. Process start strings are limited to " +
+                    "32767 characters.";
+                throw new SyntaxException(MESSAGE, e);
+            }
         }
 
         public override string ToString()
@@ -30,7 +40,13 @@
         private void BuildCommandFromType(Type commandType, Command command)
         {
             var syntaxAttribute = this.GetSyntaxAttribute(commandType);
-            if (syntaxAttribute == null || !(syntaxAttribute is CommandSyntaxAttribute))
+            if (syntaxAttribute == null)
+            {
+                return;
+            }
+
+            var commandSyntaxAttribute = syntaxAttribute as CommandSyntaxAttribute;
+            if (commandSyntaxAttribute == null)
             {
                 return;
             }
@@ -41,7 +57,10 @@
                 this.BuildCommandFromType(baseType, command);
             }
 
-            this.syntax.Append(syntaxAttribute.Syntax + ' ');
+            if (commandType.BaseType != typeof(Command))
+            {
+                this.syntax.AppendFormat("\"{0}\" ", commandSyntaxAttribute.GetFileName());
+            }
 
             var properties = commandType.GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance |
                 BindingFlags.Public);

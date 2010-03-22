@@ -1,6 +1,7 @@
 ﻿namespace Crabwise.CommandWrap.Library
 {
     using System;
+    using System.IO;
 
     /// <summary>
     /// Describes the syntax of a command.
@@ -26,5 +27,20 @@
         /// Gets or sets the default working directory for the command.
         /// </summary>
         public string DefaultWorkingDirectory { get; set; }
+
+        public string GetFileName()
+        {
+            string fileName;
+            if (this.DefaultPath == null)
+            {
+                fileName = this.Syntax;
+            }
+            else
+            {
+                fileName = Path.Combine(this.DefaultPath, this.Syntax);
+            }
+
+            return fileName;
+        }
     }
 }

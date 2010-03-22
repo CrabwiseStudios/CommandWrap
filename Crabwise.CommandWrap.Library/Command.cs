@@ -1,12 +1,36 @@
 ﻿namespace Crabwise.CommandWrap.Library
 {
     using System;
+    using System.Diagnostics;
+    using System.IO;
 
     /// <summary>
     /// Provides an abstract representation of a command prompt command.
     /// </summary>
     public abstract class Command
     {
+        public void Execute()
+        {
+            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
+            SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
+            syntaxBuilder.AppendCommand(this);
+            var arguments = syntaxBuilder.ToString();
+            var fileName = commandSyntaxAttribute.GetFileName();
+            var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
+            var processStartInfo = new ProcessStartInfo
+                {
+                    Arguments = arguments,
+                    FileName = fileName,
+                    RedirectStandardError = true,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = workingDirectory
+                };
+
+            var process = Process.Start(processStartInfo);
+        }
+
         /// <summary>
         /// Determines whether two <see cref="Command"/> objects have the same <see cref="String"/>.
         /// </summary>
@@ -42,8 +66,20 @@
         {
             SyntaxBuilder syntaxBuilder = new SyntaxBuilder();
             syntaxBuilder.AppendCommand(this);
+            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
 
-            return syntaxBuilder.ToString();
+            return commandSyntaxAttribute.GetFileName() + ' ' + syntaxBuilder.ToString();
+        }
+
+        private CommandSyntaxAttribute GetCommandSyntaxAttribute()
+        {
+            var attributes = this.GetType().GetCustomAttributes(typeof(CommandSyntaxAttribute), true);
+            if (attributes.Length == 0)
+            {
+                throw new SyntaxException("This command does not have a CommandSyntaxAttribute.");
+            }
+
+            return (CommandSyntaxAttribute)attributes[0];
         }
     }
 }
