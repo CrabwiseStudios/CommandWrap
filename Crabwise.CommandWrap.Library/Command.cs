@@ -1,35 +1,66 @@
 ﻿namespace Crabwise.CommandWrap.Library
 {
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Text;
     using System.IO;
+    using System.Text;
 
     /// <summary>
     /// Provides an abstract representation of a command prompt command.
     /// </summary>
     public abstract class Command
     {
+        /// <summary>
+        /// The process in which this command runs.
+        /// </summary>
         private Process process;
 
+        /// <summary>
+        /// Gets the output that was printed to standard error after the command was executed.
+        /// </summary>
         public string ErrorOutput { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether or not this command has ben executed.
+        /// </summary>
+        /// <remarks>
+        /// After a command has been executed it can not be executed again.
+        /// </remarks>
         public bool HasExecuted { get; private set; }
 
+        /// <summary>
+        /// Gets the output that was printed to standard output after the command was executed.
+        /// </summary>
         public string StandardOutput { get; private set; }
 
+        /// <summary>
+        /// Closes the standard input to this command.
+        /// </summary>
+        public void CloseStandardInput()
+        {
+            this.process.StandardInput.Close();
+        }
+
+        /// <summary>
+        /// Executes this command without any additional options.
+        /// </summary>
+        /// <returns>The exit code of the process.</returns>
         public int Execute()
         {
             return this.Execute(null);
         }
 
+        /// <summary>
+        /// Uses a <see cref="CommandStartInfo"/> object to execute this command.
+        /// </summary>
+        /// <param name="startInfo">Specifies how to execute this command.</param>
+        /// <returns>The exit code of the process.</returns>
         public int Execute(CommandStartInfo startInfo)
         {
             if (this.HasExecuted)
             {
-                // Need command exception.
-                throw new Exception();
+                throw new CommandException("This command has already been executed.", null, this);
             }
 
             var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
@@ -61,25 +92,25 @@
             {
                 processStartInfo = startInfo.GetProcessStartInfo();
             }
+
             processStartInfo.Arguments = arguments;
             processStartInfo.FileName = fileName;
             processStartInfo.RedirectStandardError = true;
-            processStartInfo.RedirectStandardInput = true;
             processStartInfo.RedirectStandardOutput = true;
             processStartInfo.UseShellExecute = false;
             processStartInfo.WorkingDirectory = workingDirectory;
 
-            process = new Process { StartInfo = processStartInfo };
+            this.process = new Process { StartInfo = processStartInfo };
             var errorOutputBuilder = new StringBuilder();
             var standardOutputBuilder = new StringBuilder();
-            process.ErrorDataReceived += (s, e) =>
+            this.process.ErrorDataReceived += (s, e) =>
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
                         errorOutputBuilder.AppendLine(e.Data);
                     }
                 };
-            process.OutputDataReceived += (s, e) =>
+            this.process.OutputDataReceived += (s, e) =>
                 {
                     if (!string.IsNullOrEmpty(e.Data))
                     {
@@ -87,33 +118,54 @@
                     }
                 };
 
-            process.Start();
-            process.BeginErrorReadLine();
-            process.BeginOutputReadLine();
-            process.WaitForExit();
+            this.process.Start();
+            this.process.BeginErrorReadLine();
+            this.process.BeginOutputReadLine();
+            this.process.WaitForExit();
 
             this.ErrorOutput = errorOutputBuilder.ToString();
             this.StandardOutput = standardOutputBuilder.ToString();
             this.HasExecuted = true;
-            return process.ExitCode;
+            return this.process.ExitCode;
         }
 
-        public void WriteToStandardIn(object input)
+        /// <summary>
+        /// Writes a <see cref="System.String"/> to the standard input of this command.
+        /// </summary>
+        /// <param name="input"><see cref="System.String"/> to write.</param>
+        /// <remarks>
+        /// This method can only be used after <see cref="Command.Execute()"/> has been called.
+        /// </remarks>
+        public void WriteToStandardIn(string input)
         {
-            process.StandardInput.Write(input);
+            this.process.StandardInput.Write(input);
         }
 
-        public void WriteToStandardIn(ICollection input)
+        /// <summary>
+        /// Writes a collection of strings to the standard input of this command.
+        /// </summary>
+        /// <param name="input"><see cref="System.Collections.Generic.Collection{T}"/> of strings to write.</param>
+        /// <remarks>
+        /// This method can only be used after <see cref="Command.Execute()"/> has been called.
+        /// </remarks>
+        public void WriteToStandardIn(ICollection<string> input)
         {
             foreach (var item in input)
             {
-                process.StandardInput.WriteLine(item);
+                this.process.StandardInput.WriteLine(item);
             }
         }
 
-        public void WriteLineToStandardIn(object input)
+        /// <summary>
+        /// Writes a <see cref="System.String"/> followed by a newline to the standard input of this command.
+        /// </summary>
+        /// <param name="input"><see cref="System.String"/> to write.</param>
+        /// <remarks>
+        /// This method can only be used after <see cref="Command.Execute()"/> has been called.
+        /// </remarks>
+        public void WriteLineToStandardIn(string input)
         {
-            process.StandardInput.WriteLine(input);
+            this.process.StandardInput.WriteLine(input);
         }
 
         /// <summary>
@@ -154,6 +206,15 @@
             return syntaxBuilder.ToString();
         }
 
+        /// <summary>
+        /// Gets the <see cref="CommandSyntaxAttribute"/> that adorns this command.
+        /// </summary>
+        /// <returns><see cref="CommandSyntaxAttribute"/> attached to this command.</returns>
+        /// <remarks>
+        /// This method throws a SyntaxException if it cannot find a <see cref="CommandSyntaxAttribute"/>. This is 
+        /// generally wanted behavior since all classes implementing <see cref="Command"/> are required to have this 
+        /// attribute.
+        /// </remarks>
         private CommandSyntaxAttribute GetCommandSyntaxAttribute()
         {
             var attributes = this.GetType().GetCustomAttributes(typeof(CommandSyntaxAttribute), true);

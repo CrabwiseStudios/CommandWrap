@@ -29,6 +29,9 @@
         /// </summary>
         public bool Required { get; set; }
 
+        /// <summary>
+        /// Gets or sets a custom parameter type to be used instead of the default one.
+        /// </summary>
         public Type ParameterType { get; set; }
 
         /// <summary>

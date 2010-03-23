@@ -12,15 +12,9 @@
     public class CommandTests
     {
         [TestMethod()]
-        public void ToString_StringArgument_UsesDefaultStringBehavior()
+        public void Test()
         {
-            Command command = new CommandWithOneParam
-                {
-                    Parameter1 = "parameter 1"
-                };
-            command.Execute();
 
-            //Assert.AreEqual(expected, actual);
         }
     }
 }

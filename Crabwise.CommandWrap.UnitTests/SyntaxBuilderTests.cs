@@ -20,7 +20,7 @@
                 };
 
             SyntaxBuilder target = new SyntaxBuilder(command);
-            string expected = "--param1 \"" + argument.ToString() + '"';
+            string expected = "command --param1 " + argument.ToString();
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -37,8 +37,8 @@
                 Parameter2 = argument2
             };
 
-            string expected = "--param1 \"" + argument1.ToString() + "\" --param2 \"" +
-                argument2.ToString() + '"';
+            string expected = "command --param1 " + argument1.ToString() + " --param2 " +
+                argument2.ToString();
             SyntaxBuilder target = new SyntaxBuilder(command);
             string actual = target.ToString();
 
@@ -54,7 +54,7 @@
                 Parameter1 = argument1
             };
 
-            string expected = "--param1 \"" + argument1.ToString() + '"';
+            string expected = "command --param1 " + argument1.ToString();
             SyntaxBuilder target = new SyntaxBuilder(command);
             string actual = target.ToString();
 
@@ -66,7 +66,7 @@
         {
             CommandWithTwoParams command = new CommandWithTwoParams();
 
-            string expected = "";
+            string expected = "command";
             SyntaxBuilder target = new SyntaxBuilder(command);
             string actual = target.ToString();
 
@@ -82,7 +82,7 @@
                 Parameter1 = argument1,
             };
 
-            string expected = "--param1 \"" + argument1.ToString() + '"';
+            string expected = "command --param1 " + argument1.ToString();
             SyntaxBuilder target = new SyntaxBuilder(command);
             string actual = target.ToString();
 
@@ -96,7 +96,7 @@
             const int argument1 = 0;
             CommandWithRequiredParam command = new CommandWithRequiredParam();
 
-            string expected = "--param1 " + argument1.ToString();
+            string expected = "command --param1 " + argument1.ToString();
             SyntaxBuilder target = new SyntaxBuilder(command);
             string actual = target.ToString();
 

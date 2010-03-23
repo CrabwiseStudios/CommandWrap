@@ -28,7 +28,16 @@
         /// </summary>
         public string DefaultWorkingDirectory { get; set; }
 
-        public string GetFileName()
+        /// <summary>
+        /// Gets the full path pointing to the file name indicated by this attribute.
+        /// </summary>
+        /// <returns>The full path file name.</returns>
+        /// <remarks>
+        /// The <see cref="System.String"/> returned by this method is calculated by combining the 
+        /// <see cref="CommandSyntaxAttribute.DefaultPath"/> property and the <see cref="SyntaxAttribute.Syntax"/>
+        /// property.
+        /// </remarks>
+        public string GetFullPath()
         {
             string fileName;
             if (this.DefaultPath == null)

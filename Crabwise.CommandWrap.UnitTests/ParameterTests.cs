@@ -16,7 +16,7 @@
             ParameterSyntaxAttribute attribute = new ParameterSyntaxAttribute("--param {arg}");
             Parameter target = new Parameter(attribute, "argument");
 
-            string expected = "--param \"argument\"";
+            string expected = "--param argument";
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -52,7 +52,7 @@
             ParameterSyntaxAttribute attribute = new ParameterSyntaxAttribute("--param {arg}");
             Parameter target = new Parameter(attribute, true);
 
-            string expected = "--param \"True\"";
+            string expected = "--param True";
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -64,7 +64,7 @@
             ParameterSyntaxAttribute attribute = new ParameterSyntaxAttribute("--param {arg}");
             Parameter target = new Parameter(attribute, false);
 
-            string expected = "--param \"False\"";
+            string expected = "--param False";
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -77,7 +77,7 @@
             IEnumerable argument = new string[] { "argument" };
             Parameter target = new Parameter(attribute, argument);
 
-            string expected = "--param \"argument\"";
+            string expected = "--param argument";
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);
@@ -90,7 +90,7 @@
             IEnumerable argument = new string[] { "argument1", "argument2" };
             Parameter target = new Parameter(attribute, argument);
 
-            string expected = "--param \"argument1\" \"argument2\"";
+            string expected = "--param argument1 argument2";
             string actual = target.ToString();
 
             Assert.AreEqual(expected, actual);

@@ -23,6 +23,7 @@
             this.Domain = processStartInfo.Domain;
             this.LoadUserProfile = processStartInfo.LoadUserProfile;
             this.Password = processStartInfo.Password;
+            this.RedirectStandardInput = processStartInfo.RedirectStandardInput;
             this.UserName = processStartInfo.UserName;
             this.WindowStyle = processStartInfo.WindowStyle;
         }
@@ -59,6 +60,12 @@
         /// command if it isn't known at compile time.
         /// </remarks>
         public string Path { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the RedirectStandardInput property when executing the command.
+        /// </summary>
+        /// <seealso cref="System.Diagnostics.ProcessStartInfo.RedirectStandardInput"/>
+        public bool RedirectStandardInput { get; set; }
 
         /// <summary>
         /// Gets or sets the UserName property when executing the command.
@@ -99,6 +106,7 @@
                 Domain = this.Domain,
                 LoadUserProfile = this.LoadUserProfile,
                 Password = this.Password,
+                RedirectStandardInput = this.RedirectStandardInput,
                 UserName = this.UserName,
                 WindowStyle = this.WindowStyle
             };
