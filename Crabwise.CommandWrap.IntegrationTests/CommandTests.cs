@@ -23,8 +23,8 @@
         public void Execute_IpConfigCommand_ExecutesSuccessfully()
         {
             var ipConfigCommand = new IpConfigCommand();
-            ipConfigCommand.CommandExecution = CommandPromptCommand.CommandOptions.C;
             ipConfigCommand.Execute();
+            var output = ipConfigCommand.StandardOutput;
         }
     }
 }
