@@ -1,5 +1,7 @@
 ﻿namespace Crabwise.CommandWrap.Library
 {
+    using System.Collections;
+    using System.Collections.Specialized;
     using System.Diagnostics;
     using System.Security;
 
@@ -17,13 +19,14 @@
         /// </summary>
         public CommandStartInfo()
         {
+            this.EnvironmentVariables = new StringDictionary();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandStartInfo"/> class using a path.
         /// </summary>
         /// <param name="path">The path to use for executing a command.</param>
-        public CommandStartInfo(string path)
+        public CommandStartInfo(string path) : this()
         {
             this.Path = path;
         }
@@ -33,7 +36,7 @@
         /// <see cref="ProcessStartInfo"/> object to initialize its properties.
         /// </summary>
         /// <param name="processStartInfo">The <see cref="ProcessStartInfo"/> object to use.</param>
-        public CommandStartInfo(ProcessStartInfo processStartInfo)
+        public CommandStartInfo(ProcessStartInfo processStartInfo) : this()
         {
             this.CreateNoWindow = processStartInfo.CreateNoWindow;
             this.Domain = processStartInfo.Domain;
@@ -43,28 +46,40 @@
             this.UserName = processStartInfo.UserName;
             this.WindowStyle = processStartInfo.WindowStyle;
             this.WorkingDirectory = processStartInfo.WorkingDirectory;
+
+            foreach (var environmentVariable in processStartInfo.EnvironmentVariables)
+            {
+                var dictEntry = (DictionaryEntry)environmentVariable;
+                this.EnvironmentVariables.Add(dictEntry.Key.ToString(), dictEntry.Value.ToString());
+            }
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the CreateNoWindow property when executing the command.
+        /// Gets or sets a value indicating whether the CreateNoWindow property is set when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.CreateNoWindow"/>
         public bool CreateNoWindow { get; set; }
 
         /// <summary>
-        /// Gets or sets the Domain property when executing the command.
+        /// Gets or sets the Domain property to use when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.Domain"/>
         public string Domain { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the LoadUserProfile property when executing the command.
+        /// Gets the EnvironmentVariables property to use when executing the command.
+        /// </summary>
+        /// <seealso cref="System.Diagnostics.ProcessStartInfo.EnvironmentVariables"/>
+        public StringDictionary EnvironmentVariables { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the LoadUserProfile property is set when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.LoadUserProfile"/>
         public bool LoadUserProfile { get; set; }
 
         /// <summary>
-        /// Gets or sets the Password property when executing the command.
+        /// Gets or sets the Password property to use when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.Password"/>
         public SecureString Password { get; set; }
@@ -79,19 +94,20 @@
         public string Path { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the RedirectStandardInput property when executing the command.
+        /// Gets or sets a value indicating whether the RedirectStandardInput property is set when executing the 
+        /// command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.RedirectStandardInput"/>
         public bool RedirectStandardInput { get; set; }
 
         /// <summary>
-        /// Gets or sets the UserName property when executing the command.
+        /// Gets or sets the UserName property to use when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.UserName"/>
         public string UserName { get; set; }
 
         /// <summary>
-        /// Gets or sets the WindowStyle property when executing the command.
+        /// Gets or sets the WindowStyle property to use when executing the command.
         /// </summary>
         /// <seealso cref="System.Diagnostics.ProcessStartInfo.WindowStyle"/>
         public ProcessWindowStyle WindowStyle { get; set; }
@@ -117,7 +133,7 @@
         /// </remarks>
         internal ProcessStartInfo GetProcessStartInfo()
         {
-            return new ProcessStartInfo
+            var processStartInfo = new ProcessStartInfo
             {
                 CreateNoWindow = this.CreateNoWindow,
                 Domain = this.Domain,
@@ -128,6 +144,14 @@
                 WindowStyle = this.WindowStyle,
                 WorkingDirectory = this.WorkingDirectory
             };
+
+            foreach (var environmentVariable in this.EnvironmentVariables)
+            {
+                var dictEntry = (DictionaryEntry)environmentVariable;
+                processStartInfo.EnvironmentVariables.Add(dictEntry.Key.ToString(), dictEntry.Value.ToString());
+            }
+
+            return processStartInfo;
         }
     }
 }
