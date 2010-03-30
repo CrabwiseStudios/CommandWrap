@@ -12,7 +12,7 @@
             K
         }
 
-        [ParameterSyntax("/{arg}", Priority = -1)]
+        [ParameterSyntax("/{arg}", Position = -1)]
         public CommandOptions? CommandExecution { get; set; }
     }
 }

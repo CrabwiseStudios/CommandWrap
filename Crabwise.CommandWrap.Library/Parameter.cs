@@ -33,9 +33,9 @@
         protected readonly object Argument;
 
         /// <summary>
-        /// Priority of this parameter. Provided by syntaxAttribute in the constructor.
+        /// Position of this parameter. Provided by syntaxAttribute in the constructor.
         /// </summary>
-        protected readonly int Priority;
+        protected readonly int Position;
 
         /// <summary>
         /// Whether or not this parameter is required. Provided by syntaxAttribute in the constructor.
@@ -55,7 +55,7 @@
         /// <param name="argument">The argument provided to this parameter.</param>
         public Parameter(ParameterSyntaxAttribute syntaxAttribute, object argument)
         {
-            this.Priority = syntaxAttribute.Priority;
+            this.Position = syntaxAttribute.Position;
             this.Required = syntaxAttribute.Required;
             this.Syntax = syntaxAttribute.Syntax;
             this.Argument = argument;
@@ -69,11 +69,11 @@
         /// instance is equal to <paramref name="other"/>, or a value greater than zero if this instance is 
         /// greater than <paramref name="other"/>.</returns>
         /// <remarks>
-        /// <see cref="Parameter"/> objects are compared using their priority values.
+        /// <see cref="Parameter"/> objects are compared using their position values.
         /// </remarks>
         public int CompareTo(Parameter other)
         {
-            return other.Priority.CompareTo(this.Priority);
+            return this.Position.CompareTo(other.Position);
         }
 
         /// <summary>
