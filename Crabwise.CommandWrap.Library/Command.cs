@@ -43,12 +43,16 @@
         }
 
         /// <summary>
-        /// Executes this command without any additional options.
+        /// Executes this command with the default <see cref="CommandStartInfo"/> for this <see cref="Command"/>.
         /// </summary>
         /// <returns>The exit code of the process.</returns>
+        /// <remarks>
+        /// The default <see cref="CommandStartInfo"/> options can be set by deriving from this class and then 
+        /// overriding the <see cref="Command.GetDefaultCommandStartInfo"/> method.
+        /// </remarks>
         public int Execute()
         {
-            return this.Execute(null);
+            return this.Execute(this.GetDefaultCommandStartInfo());
         }
 
         /// <summary>
@@ -178,6 +182,16 @@
         public void WriteLineToStandardIn(string input)
         {
             this.process.StandardInput.WriteLine(input);
+        }
+
+        /// <summary>
+        /// Can be overriden to provide default <see cref="CommandStartInfo"/> options for this <see cref="Command"/>.
+        /// When not overridden, the <see cref="CommandStartInfo"/> defaults to null (no options).
+        /// </summary>
+        /// <returns>The default <see cref="CommandStartInfo"/> object to use when executing this command.</returns>
+        protected virtual CommandStartInfo GetDefaultCommandStartInfo()
+        {
+            return null;
         }
 
         /// <summary>

@@ -26,6 +26,7 @@
             this.RedirectStandardInput = processStartInfo.RedirectStandardInput;
             this.UserName = processStartInfo.UserName;
             this.WindowStyle = processStartInfo.WindowStyle;
+            this.WorkingDirectory = processStartInfo.WorkingDirectory;
         }
 
         /// <summary>
@@ -108,7 +109,8 @@
                 Password = this.Password,
                 RedirectStandardInput = this.RedirectStandardInput,
                 UserName = this.UserName,
-                WindowStyle = this.WindowStyle
+                WindowStyle = this.WindowStyle,
+                WorkingDirectory = this.WorkingDirectory
             };
         }
     }
