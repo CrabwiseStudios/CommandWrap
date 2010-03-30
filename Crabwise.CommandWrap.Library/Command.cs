@@ -17,6 +17,11 @@
         private Process process;
 
         /// <summary>
+        /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
+        /// </summary>
+        private CommandStartInfo defaultCommandStartInfo = null;
+
+        /// <summary>
         /// Gets the output that was printed to standard error after the command was executed.
         /// </summary>
         public string ErrorOutput { get; private set; }
@@ -35,6 +40,23 @@
         public string StandardOutput { get; private set; }
 
         /// <summary>
+        /// Gets or sets <see cref="CommandStartInfo"/> object which provides default options to use when executing 
+        /// this command. Defaults to null (no options).
+        /// </summary>
+        protected CommandStartInfo DefaultCommandStartInfo
+        {
+            get
+            {
+                return this.defaultCommandStartInfo;
+            }
+
+            set
+            {
+                this.defaultCommandStartInfo = value;
+            }
+        }
+
+        /// <summary>
         /// Closes the standard input to this command.
         /// </summary>
         public void CloseStandardInput()
@@ -48,11 +70,11 @@
         /// <returns>The exit code of the process.</returns>
         /// <remarks>
         /// The default <see cref="CommandStartInfo"/> options can be set by deriving from this class and then 
-        /// overriding the <see cref="Command.GetDefaultCommandStartInfo"/> method.
+        /// overriding the <see cref="Command.DefaultCommandStartInfo"/> property.
         /// </remarks>
         public int Execute()
         {
-            return this.Execute(this.GetDefaultCommandStartInfo());
+            return this.Execute(this.DefaultCommandStartInfo);
         }
 
         /// <summary>
@@ -182,16 +204,6 @@
         public void WriteLineToStandardIn(string input)
         {
             this.process.StandardInput.WriteLine(input);
-        }
-
-        /// <summary>
-        /// Can be overriden to provide default <see cref="CommandStartInfo"/> options for this <see cref="Command"/>.
-        /// When not overridden, the <see cref="CommandStartInfo"/> defaults to null (no options).
-        /// </summary>
-        /// <returns>The default <see cref="CommandStartInfo"/> object to use when executing this command.</returns>
-        protected virtual CommandStartInfo GetDefaultCommandStartInfo()
-        {
-            return null;
         }
 
         /// <summary>
