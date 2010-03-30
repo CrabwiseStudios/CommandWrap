@@ -13,10 +13,26 @@
     public sealed class CommandStartInfo
     {
         /// <summary>
-        /// Initializes a new instance of the CommandStartInfo class using a 
-        /// <see cref="System.Diagnostics.ProcessStartInfo"/> object to initialize its properties.
+        /// Initializes a new instance of the <see cref="CommandStartInfo"/> class with empty properties.
         /// </summary>
-        /// <param name="processStartInfo">The <see cref="System.Diagnostics.ProcessStartInfo"/> object to use.</param>
+        public CommandStartInfo()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandStartInfo"/> class using a path.
+        /// </summary>
+        /// <param name="path">The path to use for executing a command.</param>
+        public CommandStartInfo(string path)
+        {
+            this.Path = path;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CommandStartInfo"/> class using a 
+        /// <see cref="ProcessStartInfo"/> object to initialize its properties.
+        /// </summary>
+        /// <param name="processStartInfo">The <see cref="ProcessStartInfo"/> object to use.</param>
         public CommandStartInfo(ProcessStartInfo processStartInfo)
         {
             this.CreateNoWindow = processStartInfo.CreateNoWindow;
@@ -54,7 +70,7 @@
         public SecureString Password { get; set; }
 
         /// <summary>
-        /// Gets or sets the path to the command.
+        /// Gets or sets the path to use for executing a command.
         /// </summary>
         /// <remarks>
         /// This property overrides the DefaultPath attribute on any commands. It can be used to set the path of the 

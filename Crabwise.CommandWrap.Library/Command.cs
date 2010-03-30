@@ -103,7 +103,7 @@
             {
                 if (!string.IsNullOrEmpty(startInfo.Path))
                 {
-                    var path = Path.Combine(startInfo.Path, commandSyntaxAttribute.Syntax);
+                    var path = Path.Combine(startInfo.Path, syntaxBuilder.FileName);
                     fileName = Environment.ExpandEnvironmentVariables(path);
                 }
 
