@@ -129,20 +129,8 @@
             this.process = new Process { StartInfo = processStartInfo };
             var errorOutputBuilder = new StringBuilder();
             var standardOutputBuilder = new StringBuilder();
-            this.process.ErrorDataReceived += (s, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
-                    {
-                        errorOutputBuilder.AppendLine(e.Data);
-                    }
-                };
-            this.process.OutputDataReceived += (s, e) =>
-                {
-                    if (!string.IsNullOrEmpty(e.Data))
-                    {
-                        standardOutputBuilder.AppendLine(e.Data);
-                    }
-                };
+            this.process.ErrorDataReceived += (s, e) => errorOutputBuilder.AppendLine(e.Data);
+            this.process.OutputDataReceived += (s, e) => standardOutputBuilder.AppendLine(e.Data);
 
             this.process.Start();
             this.process.BeginErrorReadLine();
