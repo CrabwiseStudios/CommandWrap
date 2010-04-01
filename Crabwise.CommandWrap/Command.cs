@@ -12,14 +12,36 @@
     public abstract class Command
     {
         /// <summary>
+        /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
+        /// </summary>
+        private readonly CommandStartInfo defaultCommandStartInfo = new CommandStartInfo();
+
+        /// <summary>
         /// The process in which this command runs.
         /// </summary>
         private Process process;
 
         /// <summary>
-        /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
+        /// Initializes a new instance of the Command class.
         /// </summary>
-        private CommandStartInfo defaultCommandStartInfo = null;
+        public Command()
+        {
+            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
+            var path = commandSyntaxAttribute.DefaultPath;
+            if (!string.IsNullOrEmpty(path))
+            {
+                path = Environment.ExpandEnvironmentVariables(path);
+            }
+
+            var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
+            if (!string.IsNullOrEmpty(workingDirectory))
+            {
+                workingDirectory = Environment.ExpandEnvironmentVariables(workingDirectory);
+            }
+
+            this.defaultCommandStartInfo.Path = path;
+            this.defaultCommandStartInfo.WorkingDirectory = workingDirectory;
+        }
 
         /// <summary>
         /// Gets the output that was printed to standard error after the command was executed.
@@ -40,19 +62,14 @@
         public string StandardOutput { get; private set; }
 
         /// <summary>
-        /// Gets or sets <see cref="CommandStartInfo"/> object which provides default options to use when executing 
+        /// Gets a <see cref="CommandStartInfo"/> object which provides default options to use when executing 
         /// this command. Defaults to null (no options).
         /// </summary>
-        protected CommandStartInfo DefaultCommandStartInfo
+        public CommandStartInfo DefaultCommandStartInfo
         {
             get
             {
                 return this.defaultCommandStartInfo;
-            }
-
-            set
-            {
-                this.defaultCommandStartInfo = value;
             }
         }
 
@@ -89,42 +106,20 @@
                 throw new CommandException("This command has already been executed.", null, this);
             }
 
+            if (startInfo == null)
+            {
+                throw new ArgumentNullException("startInfo");
+            }
+
             var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
             SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
             var arguments = syntaxBuilder.Arguments;
-            string fileName = Environment.ExpandEnvironmentVariables(syntaxBuilder.FileName);
-            string workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
-            if (!string.IsNullOrEmpty(workingDirectory))
-            {
-                workingDirectory = Environment.ExpandEnvironmentVariables(workingDirectory);
-            }
 
-            if (startInfo != null)
-            {
-                if (!string.IsNullOrEmpty(startInfo.Path))
-                {
-                    var path = Path.Combine(startInfo.Path, syntaxBuilder.FileName);
-                    fileName = Environment.ExpandEnvironmentVariables(path);
-                }
-
-                if (!string.IsNullOrEmpty(startInfo.WorkingDirectory))
-                {
-                    workingDirectory = Environment.ExpandEnvironmentVariables(startInfo.WorkingDirectory);
-                }
-            }
-
-            var processStartInfo = new ProcessStartInfo();
-            if (startInfo != null)
-            {
-                processStartInfo = startInfo.GetProcessStartInfo();
-            }
-
+            ProcessStartInfo processStartInfo = startInfo.GetProcessStartInfo(syntaxBuilder.FileName);
             processStartInfo.Arguments = arguments;
-            processStartInfo.FileName = fileName;
             processStartInfo.RedirectStandardError = true;
             processStartInfo.RedirectStandardOutput = true;
             processStartInfo.UseShellExecute = false;
-            processStartInfo.WorkingDirectory = workingDirectory;
 
             this.process = new Process { StartInfo = processStartInfo };
             var errorOutputBuilder = new StringBuilder();

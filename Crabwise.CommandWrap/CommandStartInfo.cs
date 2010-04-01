@@ -1,5 +1,6 @@
 ﻿namespace Crabwise.CommandWrap
 {
+    using System;
     using System.Collections;
     using System.Collections.Specialized;
     using System.Diagnostics;
@@ -26,7 +27,8 @@
         /// Initializes a new instance of the <see cref="CommandStartInfo"/> class using a path.
         /// </summary>
         /// <param name="path">The path to use for executing a command.</param>
-        public CommandStartInfo(string path) : this()
+        public CommandStartInfo(string path)
+            : this()
         {
             this.Path = path;
         }
@@ -36,7 +38,8 @@
         /// <see cref="ProcessStartInfo"/> object to initialize its properties.
         /// </summary>
         /// <param name="processStartInfo">The <see cref="ProcessStartInfo"/> object to use.</param>
-        public CommandStartInfo(ProcessStartInfo processStartInfo) : this()
+        public CommandStartInfo(ProcessStartInfo processStartInfo)
+            : this()
         {
             this.CreateNoWindow = processStartInfo.CreateNoWindow;
             this.Domain = processStartInfo.Domain;
@@ -125,24 +128,50 @@
         /// Returns a <see cref="System.Diagnostics.ProcessStartInfo"/> object which has matching properties of this
         /// <see cref="CommandStartInfo"/> object.
         /// </summary>
+        /// <param name="fileName">The file name to use when creating the <see cref="ProcessStartInfo"/> object.</param>
         /// <returns><see cref="System.Diagnostics.ProcessStartInfo"/> object with matching properties.</returns>
         /// <remarks>
         /// Specifically, the returned <see cref="System.Diagnostics.ProcessStartInfo"/> object that is returned has 
         /// the same properties except for <see cref="CommandStartInfo.Path"/> and 
         /// <see cref="CommandStartInfo.WorkingDirectory"/>.
         /// </remarks>
-        internal ProcessStartInfo GetProcessStartInfo()
+        internal ProcessStartInfo GetProcessStartInfo(string fileName)
         {
+            if (fileName == null)
+            {
+                throw new ArgumentNullException("fileName");
+            }
+
+            if (fileName.Length == 0)
+            {
+                throw new ArgumentException("The given file name was empty.", "fileName");
+            }
+
+            var workingDirectory = this.WorkingDirectory;
+            var fullFileName = fileName;
+            if (!string.IsNullOrEmpty(workingDirectory))
+            {
+                workingDirectory = Environment.ExpandEnvironmentVariables(workingDirectory);
+            }
+
+            if (!string.IsNullOrEmpty(this.Path))
+            {
+                fullFileName = System.IO.Path.Combine(this.Path, fileName);
+            }
+
+            fullFileName = Environment.ExpandEnvironmentVariables(fullFileName);
+
             var processStartInfo = new ProcessStartInfo
             {
                 CreateNoWindow = this.CreateNoWindow,
                 Domain = this.Domain,
+                FileName = fullFileName,
                 LoadUserProfile = this.LoadUserProfile,
                 Password = this.Password,
                 RedirectStandardInput = this.RedirectStandardInput,
                 UserName = this.UserName,
                 WindowStyle = this.WindowStyle,
-                WorkingDirectory = this.WorkingDirectory
+                WorkingDirectory = workingDirectory
             };
 
             foreach (var environmentVariable in this.EnvironmentVariables)
