@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Crabwise Studios")]
-[assembly: AssemblyProduct("Crabwise.CommandWrap.Library.Properties")]
+[assembly: AssemblyProduct("Crabwise.CommandWrap.Properties")]
 [assembly: AssemblyCopyright("2010 Crabwise Studios")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.IntegrationTests
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
     using System.Collections.ObjectModel;
 
     [CommandSyntax("cmd.exe", DefaultPath = @"%windir%\system32\")]

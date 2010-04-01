@@ -1,4 +1,4 @@
-﻿namespace Crabwise.CommandWrap.Library
+﻿namespace Crabwise.CommandWrap
 {
     using System;
     using System.IO;

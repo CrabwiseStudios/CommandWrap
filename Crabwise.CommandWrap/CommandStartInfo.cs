@@ -1,4 +1,4 @@
-﻿namespace Crabwise.CommandWrap.Library
+﻿namespace Crabwise.CommandWrap
 {
     using System.Collections;
     using System.Collections.Specialized;

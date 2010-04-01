@@ -8,14 +8,14 @@
     <ProjectGuid>{70EC988D-141A-4258-84BB-401983EB8556}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Crabwise.CommandWrap.Library</RootNamespace>
-    <AssemblyName>Crabwise.CommandWrap.Library</AssemblyName>
+    <RootNamespace>Crabwise.CommandWrap</RootNamespace>
+    <AssemblyName>Crabwise.CommandWrap</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartupObject>
     </StartupObject>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>Crabwise.CommandWrap.Library.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Crabwise.CommandWrap.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Crabwise.CommandWrap.Library.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\Crabwise.CommandWrap.xml</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -60,6 +60,6 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Crabwise.CommandWrap.Library.snk" />
+    <None Include="Crabwise.CommandWrap.snk" />
   </ItemGroup>
 </Project>

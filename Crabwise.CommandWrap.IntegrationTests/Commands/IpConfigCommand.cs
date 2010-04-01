@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.IntegrationTests
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
     using System.Collections.ObjectModel;
 
     [CommandSyntax("ipconfig", DefaultPath = @"C:\Windows\System32")]

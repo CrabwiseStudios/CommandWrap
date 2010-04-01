@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.UnitTests.TestCommands
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
 
     /// <summary>
     /// Valid command with 1 required parameter.

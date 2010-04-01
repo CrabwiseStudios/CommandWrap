@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.UnitTests.TestCommands
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
 
     [CommandSyntax("child")]
     internal class ChildValidCommand : CommandWithOneParam

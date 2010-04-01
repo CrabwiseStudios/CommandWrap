@@ -42,7 +42,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Crabwise.CommandWrap.Library\Crabwise.CommandWrap.Library.csproj">
+    <ProjectReference Include="..\Crabwise.CommandWrap\Crabwise.CommandWrap.csproj">
       <Project>{70EC988D-141A-4258-84BB-401983EB8556}</Project>
       <Name>Crabwise.CommandWrap.Library</Name>
     </ProjectReference>

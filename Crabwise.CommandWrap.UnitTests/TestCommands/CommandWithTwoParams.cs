@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.UnitTests.TestCommands
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
 
     /// <summary>
     /// Valid command with 2 parameters. Parameter2 has a positioning of 1.

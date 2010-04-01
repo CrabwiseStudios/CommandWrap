@@ -1,6 +1,6 @@
 ﻿namespace Crabwise.CommandWrap.UnitTests
 {
-    using Crabwise.CommandWrap.Library;
+    using Crabwise.CommandWrap;
     using Crabwise.CommandWrap.UnitTests.TestCommands;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crabwise.CommandWrap.Library", "Crabwise.CommandWrap.Library\Crabwise.CommandWrap.Library.csproj", "{70EC988D-141A-4258-84BB-401983EB8556}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crabwise.CommandWrap.Library", "Crabwise.CommandWrap\Crabwise.CommandWrap.csproj", "{70EC988D-141A-4258-84BB-401983EB8556}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Crabwise.CommandWrap.UnitTests", "Crabwise.CommandWrap.UnitTests\Crabwise.CommandWrap.UnitTests.csproj", "{15122040-D01B-400F-9B36-0A92A2BE4F2F}"
 EndProject
