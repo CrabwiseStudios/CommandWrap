@@ -5,16 +5,24 @@
     using System.Diagnostics;
     using System.IO;
     using System.Text;
+    using System.Runtime.Remoting.Messaging;
+    using System.Threading;
 
     /// <summary>
     /// Provides an abstract representation of a command prompt command.
     /// </summary>
     public abstract class Command
     {
+        public event EventHandler<ExecuteCompletedEventArgs> ExecuteCompleted;
+
         /// <summary>
         /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
         /// </summary>
         private readonly CommandStartInfo defaultCommandStartInfo = new CommandStartInfo();
+
+        private readonly StringBuilder errorOutputBuilder = new StringBuilder();
+
+        private readonly StringBuilder standardOutputBuilder = new StringBuilder();
 
         /// <summary>
         /// The process in which this command runs.
@@ -41,6 +49,7 @@
 
             this.defaultCommandStartInfo.Path = path;
             this.defaultCommandStartInfo.WorkingDirectory = workingDirectory;
+            this.process = new Process();
         }
 
         /// <summary>
@@ -56,10 +65,25 @@
         /// </remarks>
         public bool HasExecuted { get; private set; }
 
+        public bool IsExecuting { get; private set; }
+
         /// <summary>
         /// Gets the output that was printed to standard output after the command was executed.
         /// </summary>
         public string StandardOutput { get; private set; }
+
+        public void CancelAsync()
+        {
+            if (this.IsExecuting)
+            {
+                this.process.CloseMainWindow();
+                this.process.Close();
+            }
+            else
+            {
+                throw new CommandException("Cannot cancel this command because it isn't executing.");
+            }
+        }
 
         /// <summary>
         /// Gets a <see cref="CommandStartInfo"/> object which provides default options to use when executing 
@@ -73,12 +97,29 @@
             }
         }
 
+        public void ExecuteAsync()
+        {
+            this.ExecuteAsync(this.defaultCommandStartInfo);
+        }
+
+        public void ExecuteAsync(CommandStartInfo startInfo)
+        {
+            this.process.Exited += this.OnExecuteCompleted;
+            this.StartProcess(startInfo);
+        }
+
         /// <summary>
         /// Closes the standard input to this command.
         /// </summary>
         public void CloseStandardInput()
         {
-            this.process.StandardInput.Close();
+            try
+            {
+                this.process.StandardInput.Close();
+            }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
         /// <summary>
@@ -91,7 +132,7 @@
         /// </remarks>
         public int Execute()
         {
-            return this.Execute(this.DefaultCommandStartInfo);
+            return this.Execute(this.defaultCommandStartInfo);
         }
 
         /// <summary>
@@ -101,41 +142,11 @@
         /// <returns>The exit code of the process.</returns>
         public int Execute(CommandStartInfo startInfo)
         {
-            if (this.HasExecuted)
-            {
-                throw new CommandException("This command has already been executed.", null, this);
-            }
+            this.StartProcess(startInfo);
 
-            if (startInfo == null)
-            {
-                throw new ArgumentNullException("startInfo");
-            }
-
-            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
-            SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
-            var arguments = syntaxBuilder.Arguments;
-
-            ProcessStartInfo processStartInfo = startInfo.GetProcessStartInfo(syntaxBuilder.FileName);
-            processStartInfo.Arguments = arguments;
-            processStartInfo.RedirectStandardError = true;
-            processStartInfo.RedirectStandardOutput = true;
-            processStartInfo.UseShellExecute = false;
-
-            this.process = new Process { StartInfo = processStartInfo };
-            var errorOutputBuilder = new StringBuilder();
-            var standardOutputBuilder = new StringBuilder();
-            this.process.ErrorDataReceived += (s, e) => errorOutputBuilder.AppendLine(e.Data);
-            this.process.OutputDataReceived += (s, e) => standardOutputBuilder.AppendLine(e.Data);
-
-            this.process.Start();
-            this.process.BeginErrorReadLine();
-            this.process.BeginOutputReadLine();
             this.process.WaitForExit();
 
-            this.ErrorOutput = errorOutputBuilder.ToString();
-            this.StandardOutput = standardOutputBuilder.ToString();
-            this.HasExecuted = true;
-            return this.process.ExitCode;
+            return this.CleanupProcess();
         }
 
         /// <summary>
@@ -207,6 +218,65 @@
             }
 
             return (CommandSyntaxAttribute)attributes[0];
+        }
+
+        private void OnExecuteCompleted(object sender, EventArgs e)
+        {
+            var exitCode = this.CleanupProcess();
+            if (this.ExecuteCompleted != null)
+            {
+                this.ExecuteCompleted(this, new ExecuteCompletedEventArgs(exitCode));
+            }
+        }
+
+        private int CleanupProcess()
+        {
+            this.CloseStandardInput();
+            this.ErrorOutput = this.errorOutputBuilder.ToString();
+            this.StandardOutput = this.standardOutputBuilder.ToString();
+            var exitCode = this.process.ExitCode;
+            this.process.Close();
+            this.HasExecuted = true;
+            return exitCode;
+        }
+
+        private void StartProcess(CommandStartInfo startInfo)
+        {
+            if (this.IsExecuting)
+            {
+                throw new CommandException("Cannot execute this command because it is already running.");
+            }
+
+            this.IsExecuting = true;
+
+            if (this.HasExecuted)
+            {
+                throw new CommandException("This command has already been executed.", null, this);
+            }
+
+            if (startInfo == null)
+            {
+                throw new ArgumentNullException("startInfo");
+            }
+
+            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
+            SyntaxBuilder syntaxBuilder = new SyntaxBuilder(this);
+            var arguments = syntaxBuilder.Arguments;
+
+            ProcessStartInfo processStartInfo = startInfo.GetProcessStartInfo(syntaxBuilder.FileName);
+            processStartInfo.Arguments = arguments;
+            processStartInfo.RedirectStandardError = true;
+            processStartInfo.RedirectStandardOutput = true;
+            processStartInfo.UseShellExecute = false;
+
+            this.process.StartInfo = processStartInfo;
+            this.process.ErrorDataReceived += (s, e) => this.errorOutputBuilder.AppendLine(e.Data);
+            this.process.OutputDataReceived += (s, e) => this.standardOutputBuilder.AppendLine(e.Data);
+
+            this.process.Start();
+            this.process.BeginErrorReadLine();
+            this.process.BeginOutputReadLine();
+            this.process.EnableRaisingEvents = true;
         }
     }
 }

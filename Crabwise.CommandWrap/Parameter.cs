@@ -136,20 +136,28 @@
             StringBuilder argumentBuilder = new StringBuilder();
             if (argumentAsIEnumberable != null && !(this.Argument is string))
             {
-                foreach (var item in argumentAsIEnumberable)
+                var enumerator = argumentAsIEnumberable.GetEnumerator();
+                if (enumerator.MoveNext())
                 {
-                    var itemString = item.ToString();
-                    if (string.IsNullOrEmpty(itemString))
+                    foreach (var item in argumentAsIEnumberable)
                     {
-                        continue;
+                        var itemString = item.ToString();
+                        if (string.IsNullOrEmpty(itemString))
+                        {
+                            continue;
+                        }
+
+                        itemString = this.EscapeSpaces(itemString);
+                        argumentBuilder.Append(itemString + ' ');
                     }
 
-                    itemString = this.EscapeSpaces(itemString);
-                    argumentBuilder.Append(itemString + ' ');
+                    var argumentString = argumentBuilder.ToString().Trim();
+                    return this.Syntax.Replace("{arg}", argumentString).Trim();
                 }
-
-                var argumentString = argumentBuilder.ToString().Trim();
-                return this.Syntax.Replace("{arg}", argumentString).Trim();
+                else
+                {
+                    return string.Empty;
+                }
             }
 
             // Default Enum behavior
