@@ -4,8 +4,8 @@
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Text;
     using System.Runtime.Remoting.Messaging;
+    using System.Text;
     using System.Threading;
 
     /// <summary>
@@ -13,15 +13,19 @@
     /// </summary>
     public abstract class Command
     {
-        public event EventHandler<ExecuteCompletedEventArgs> ExecuteCompleted;
-
         /// <summary>
         /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
         /// </summary>
         private readonly CommandStartInfo defaultCommandStartInfo = new CommandStartInfo();
 
+        /// <summary>
+        /// Builds a string from the error output messages sent by the command.
+        /// </summary>
         private readonly StringBuilder errorOutputBuilder = new StringBuilder();
 
+        /// <summary>
+        /// Builds a string from the standard output messages sent by the command.
+        /// </summary>
         private readonly StringBuilder standardOutputBuilder = new StringBuilder();
 
         /// <summary>
@@ -30,26 +34,20 @@
         private Process process;
 
         /// <summary>
-        /// Initializes a new instance of the Command class.
+        /// Event fired after the command is executed.
         /// </summary>
-        public Command()
+        public event EventHandler<ExecuteCompletedEventArgs> ExecuteCompleted;
+
+        /// <summary>
+        /// Gets a <see cref="CommandStartInfo"/> object which provides default options to use when executing 
+        /// this command. Defaults to null (no options).
+        /// </summary>
+        public CommandStartInfo DefaultCommandStartInfo
         {
-            var commandSyntaxAttribute = this.GetCommandSyntaxAttribute();
-            var path = commandSyntaxAttribute.DefaultPath;
-            if (!string.IsNullOrEmpty(path))
+            get
             {
-                path = Environment.ExpandEnvironmentVariables(path);
+                return this.defaultCommandStartInfo;
             }
-
-            var workingDirectory = commandSyntaxAttribute.DefaultWorkingDirectory;
-            if (!string.IsNullOrEmpty(workingDirectory))
-            {
-                workingDirectory = Environment.ExpandEnvironmentVariables(workingDirectory);
-            }
-
-            this.defaultCommandStartInfo.Path = path;
-            this.defaultCommandStartInfo.WorkingDirectory = workingDirectory;
-            this.process = new Process();
         }
 
         /// <summary>
@@ -65,6 +63,9 @@
         /// </remarks>
         public bool HasExecuted { get; private set; }
 
+        /// <summary>
+        /// Gets a value indicating whether the command is executing or not.
+        /// </summary>
         public bool IsExecuting { get; private set; }
 
         /// <summary>
@@ -72,6 +73,9 @@
         /// </summary>
         public string StandardOutput { get; private set; }
 
+        /// <summary>
+        /// Cancels the running command. Throws an exception if called on a command that is not executing.
+        /// </summary>
         public void CancelAsync()
         {
             if (this.IsExecuting)
@@ -86,22 +90,17 @@
         }
 
         /// <summary>
-        /// Gets a <see cref="CommandStartInfo"/> object which provides default options to use when executing 
-        /// this command. Defaults to null (no options).
+        /// Executes the command with default starting parameters.
         /// </summary>
-        public CommandStartInfo DefaultCommandStartInfo
-        {
-            get
-            {
-                return this.defaultCommandStartInfo;
-            }
-        }
-
         public void ExecuteAsync()
         {
             this.ExecuteAsync(this.defaultCommandStartInfo);
         }
 
+        /// <summary>
+        /// Executes the command with custom starting parameters.
+        /// </summary>
+        /// <param name="startInfo">The CommandStartInfo object that defines how the command should start</param>
         public void ExecuteAsync(CommandStartInfo startInfo)
         {
             this.process.Exited += this.OnExecuteCompleted;
@@ -220,6 +219,11 @@
             return (CommandSyntaxAttribute)attributes[0];
         }
 
+        /// <summary>
+        /// Called when the command has finished running.
+        /// </summary>
+        /// <param name="sender">Event sender</param>
+        /// <param name="e">Event argument</param>
         private void OnExecuteCompleted(object sender, EventArgs e)
         {
             var exitCode = this.CleanupProcess();
@@ -229,6 +233,10 @@
             }
         }
 
+        /// <summary>
+        /// Handles all the finishing tasks within the command.
+        /// </summary>
+        /// <returns>The exit code that the process returned</returns>
         private int CleanupProcess()
         {
             this.CloseStandardInput();
@@ -240,6 +248,10 @@
             return exitCode;
         }
 
+        /// <summary>
+        /// Starts the process with customized starting information
+        /// </summary>
+        /// <param name="startInfo">CommandStartInfo object that defines how this command should start</param>
         private void StartProcess(CommandStartInfo startInfo)
         {
             if (this.IsExecuting)
