@@ -1,5 +1,12 @@
-*/obj/*
-*/bin/*
+bin/
+obj/
+*.cache
+*.pdb
+*.user
+*~
+*.suo
+*.dll
+*.exe
+*.msi
 *.Cache
 TestResults/*
-*.suo
