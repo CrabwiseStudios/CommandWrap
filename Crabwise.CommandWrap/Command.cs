@@ -31,7 +31,7 @@
         /// <summary>
         /// The process in which this command runs.
         /// </summary>
-        private Process process;
+        private Process process = new Process();
 
         /// <summary>
         /// Event fired after the command is executed.
@@ -289,6 +289,11 @@
             this.process.BeginErrorReadLine();
             this.process.BeginOutputReadLine();
             this.process.EnableRaisingEvents = true;
+        }
+
+        public void WaitForExit()
+        {
+            this.process.WaitForExit();
         }
     }
 }
