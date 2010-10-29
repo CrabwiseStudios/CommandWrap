@@ -86,7 +86,7 @@
         /// <param name="startInfo">The CommandStartInfo object that defines how the command should start</param>
         public void ExecuteAsync(CommandStartInfo startInfo)
         {
-            this.process.Exited += this.OnExecuteCompleted;
+            this.process.Exited += this.ProcessExited;
             this.StartProcess(startInfo);
         }
 
@@ -202,12 +202,17 @@
             return (CommandSyntaxAttribute)attributes[0];
         }
 
+        private void ProcessExited(object sender, EventArgs e)
+        {
+            this.OnExecuteCompleted();
+        }
+
         /// <summary>
         /// Called when the command has finished running.
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Event argument</param>
-        private void OnExecuteCompleted(object sender, EventArgs e)
+        protected void OnExecuteCompleted()
         {
             var exitCode = this.CleanupProcess();
             if (this.ExecuteCompleted != null)
