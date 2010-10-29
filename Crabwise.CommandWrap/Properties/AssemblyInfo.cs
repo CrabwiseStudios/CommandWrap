@@ -35,4 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 [assembly: CLSCompliant(true)]
-[assembly: InternalsVisibleTo("Crabwise.CommandWrap.UnitTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100a16422aecc10ac3ef47ffad32b0679c68ddc97c595573264f520437ce0ea3a3c5c19dfe0ecef252016adebfedbb39bcfe9f7b35d3801505709b1107e85cdd5a4696725ff7b88216c60791d66eed5ea55fe582e2184b2d429820953b5e8494070f0d75cae9c6780e6de432934fc6c8f553b3d9a6ce6c7c5d1db6ed58dce4aeaa1")]
+[assembly: InternalsVisibleTo("Crabwise.CommandWrap.UnitTests")]
