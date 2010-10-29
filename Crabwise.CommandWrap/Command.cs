@@ -254,14 +254,11 @@
                 throw new CommandException("Cannot execute this command because it is already running.");
             }
 
-            if (this.CommandStarting != null)
+            var commandStartingEventArgs = new CommandStartingEventArgs();
+            this.OnCommandStarting(commandStartingEventArgs);
+            if (commandStartingEventArgs.Cancel)
             {
-                var e = new CommandStartingEventArgs();
-                this.OnCommandStarting(e);
-                if (e.Cancel)
-                {
-                    return;
-                }
+                return;
             }
 
             this.IsExecuting = true;
