@@ -14,11 +14,6 @@
     public abstract class Command
     {
         /// <summary>
-        /// Default <see cref="CommandStartInfo"/> to use for default options when executing this command.
-        /// </summary>
-        private readonly CommandStartInfo defaultCommandStartInfo = new CommandStartInfo();
-
-        /// <summary>
         /// Builds a string from the error output messages sent by the command.
         /// </summary>
         private readonly StringBuilder errorOutputBuilder = new StringBuilder();
@@ -37,18 +32,6 @@
         /// Event fired after the command is executed.
         /// </summary>
         public event EventHandler<ExecuteCompletedEventArgs> ExecuteCompleted;
-
-        /// <summary>
-        /// Gets a <see cref="CommandStartInfo"/> object which provides default options to use when executing 
-        /// this command. Defaults to null (no options).
-        /// </summary>
-        public CommandStartInfo DefaultCommandStartInfo
-        {
-            get
-            {
-                return this.defaultCommandStartInfo;
-            }
-        }
 
         /// <summary>
         /// Gets the output that was printed to standard error after the command was executed.
@@ -94,7 +77,7 @@
         /// </summary>
         public void ExecuteAsync()
         {
-            this.ExecuteAsync(this.defaultCommandStartInfo);
+            this.ExecuteAsync(new CommandStartInfo());
         }
 
         /// <summary>
@@ -131,7 +114,7 @@
         /// </remarks>
         public int Execute()
         {
-            return this.Execute(this.defaultCommandStartInfo);
+            return this.Execute(new CommandStartInfo());
         }
 
         /// <summary>
