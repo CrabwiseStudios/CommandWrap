@@ -66,6 +66,7 @@
   </Target>
   -->
   <ItemGroup>
+    <Compile Include="CommandStartingEventArgs.cs" />
     <Compile Include="ExecuteCompletedEventArgs.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="CommandException.cs" />

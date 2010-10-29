@@ -33,6 +33,8 @@
         /// </summary>
         public event EventHandler<ExecuteCompletedEventArgs> ExecuteCompleted;
 
+        public event EventHandler<CommandStartingEventArgs> CommandStarting;
+
         /// <summary>
         /// Gets the output that was printed to standard error after the command was executed.
         /// </summary>
@@ -221,6 +223,14 @@
             }
         }
 
+        protected void OnCommandStarting(CommandStartingEventArgs e)
+        {
+            if (this.CommandStarting != null)
+            {
+                this.CommandStarting(this, e);
+            }
+        }
+
         /// <summary>
         /// Handles all the finishing tasks within the command.
         /// </summary>
@@ -245,6 +255,16 @@
             if (this.IsExecuting)
             {
                 throw new CommandException("Cannot execute this command because it is already running.");
+            }
+
+            if (this.CommandStarting != null)
+            {
+                var e = new CommandStartingEventArgs();
+                this.OnCommandStarting(e);
+                if (e.Cancel)
+                {
+                    return;
+                }
             }
 
             this.IsExecuting = true;
