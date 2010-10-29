@@ -97,12 +97,9 @@
         /// </summary>
         public void CloseStandardInput()
         {
-            try
+            if (this.process.StartInfo.RedirectStandardInput)
             {
                 this.process.StandardInput.Close();
-            }
-            catch (InvalidOperationException)
-            {
             }
         }
 
