@@ -215,7 +215,7 @@
         /// </summary>
         /// <param name="sender">Event sender</param>
         /// <param name="e">Event argument</param>
-        protected void OnExecuteCompleted()
+        protected virtual void OnExecuteCompleted()
         {
             var exitCode = this.CleanupProcess();
             if (this.ExecuteCompleted != null)
@@ -224,7 +224,7 @@
             }
         }
 
-        protected void OnCommandStarting(CommandStartingEventArgs e)
+        protected virtual void OnCommandStarting(CommandStartingEventArgs e)
         {
             if (this.CommandStarting != null)
             {
