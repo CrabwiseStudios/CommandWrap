@@ -35,6 +35,10 @@
 
         public event EventHandler<CommandStartingEventArgs> CommandStarting;
 
+        public event EventHandler<OutputWrittenEventArgs> ErrorOutputWritten;
+
+        public event EventHandler<OutputWrittenEventArgs> StandardOutputWritten;
+
         /// <summary>
         /// Gets the output that was printed to standard error after the command was executed.
         /// </summary>
@@ -284,13 +288,38 @@
             processStartInfo.UseShellExecute = false;
 
             this.process.StartInfo = processStartInfo;
-            this.process.ErrorDataReceived += (s, e) => this.errorOutputBuilder.AppendLine(e.Data);
-            this.process.OutputDataReceived += (s, e) => this.standardOutputBuilder.AppendLine(e.Data);
+            this.process.ErrorDataReceived += (s, e) =>
+                                                  {
+                                                      this.errorOutputBuilder.AppendLine(e.Data);
+                                                      this.OnErrorOutputWritten(e.Data);
+                                                  };
+
+            this.process.OutputDataReceived += (s, e) =>
+                                                   {
+                                                       this.standardOutputBuilder.AppendLine(e.Data);
+                                                       this.OnStandardOutputWritten(e.Data);
+                                                   };
 
             this.process.Start();
             this.process.BeginErrorReadLine();
             this.process.BeginOutputReadLine();
             this.process.EnableRaisingEvents = true;
+        }
+
+        protected virtual void OnStandardOutputWritten(string outputLine)
+        {
+            if (this.StandardOutputWritten != null)
+            {
+                this.StandardOutputWritten(this, new OutputWrittenEventArgs(outputLine));
+            }
+        }
+
+        protected virtual void OnErrorOutputWritten(string outputLine)
+        {
+            if (this.ErrorOutputWritten != null)
+            {
+                this.ErrorOutputWritten(this, new OutputWrittenEventArgs(outputLine));
+            }
         }
 
         public void WaitForExit()
