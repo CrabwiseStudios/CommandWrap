@@ -258,7 +258,7 @@
                 throw new CommandException("Cannot execute this command because it is already running.");
             }
 
-            var commandStartingEventArgs = new CommandStartingEventArgs();
+            var commandStartingEventArgs = new CommandStartingEventArgs(startInfo);
             this.OnCommandStarting(commandStartingEventArgs);
             if (commandStartingEventArgs.Cancel)
             {
