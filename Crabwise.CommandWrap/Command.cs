@@ -26,7 +26,7 @@
         /// <summary>
         /// The process in which this command runs.
         /// </summary>
-        private Process process = new Process();
+        private readonly Process process = new Process();
 
         /// <summary>
         /// Event fired after the command is executed.
@@ -101,7 +101,7 @@
         /// </summary>
         public void CloseStandardInput()
         {
-            if (this.process.StartInfo.RedirectStandardInput)
+            if (this.process.StartInfo.RedirectStandardInput && !this.process.HasExited)
             {
                 this.process.StandardInput.Close();
             }
